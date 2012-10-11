@@ -32,7 +32,7 @@ if $valid; then
 		seconds=$(( $seconds - 60 ))
 	}
 	while (( minutes > 60 )) {
-		hours=$(( $minutes + 1 ))
+		hours=$(( $hours + 1 ))
 		minutes=$(( $minutes - 60 ))
 	}
 	# pad numbers to at least 2 digits and echo them
