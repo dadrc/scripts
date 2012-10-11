@@ -22,7 +22,7 @@ function prettyPrint() {
 }
 
 # catch missing parameter
-if [ -z "$1" ]; then
+if [[ -z $1 ]]; then
 	echo "Usage: ${0##*/} <hours>h<minutes>m<seconds>s [<description>]"
 	exit 1
 fi
