@@ -47,7 +47,7 @@ if $valid; then
 	echo "Starting timer: $(prettyPrint $seconds)."
 	# offset 
 	seconds=$(($seconds + 1))
-	# print progress
+	# sleep for given time while printing progress
 	while (( seconds-- > 1 )) {
 		print -Pn "\r\e[0K$(prettyPrint $seconds) remaining"
 		sleep 1
