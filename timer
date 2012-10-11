@@ -1,0 +1,48 @@
+#!/usr/bin/zsh
+
+# dirty little helper
+function setTime() {
+	eval $1=$match[1]
+	valid=true
+}
+
+# catch missing parameter
+if [ -z "$1" ]; then
+	echo "Usage: ${0##*/} <hours>h<minutes>m<seconds>s [<description>]"
+	exit 1
+fi
+
+# initialize stuff
+hours=0
+minutes=0
+seconds=0
+valid=false
+if (($+2)) timer=" ${(qq)2}"
+
+# parse timestamp
+[[ "$1" =~ "([0-9]+)h" ]] && setTime "hours"
+[[ "$1" =~ "([0-9]+)m" ]] && setTime "minutes"
+[[ "$1" =~ "([0-9]+)s" ]] && setTime "seconds"
+
+# at least one match was successful
+if $valid; then
+	# pad numbers to at least 2 digits and echo them
+	echo "Starting timer: ${hours}:${(l:2::0:)${minutes}}:${(l:2::0:)${seconds}}."
+	# calculate seconds
+	minutes=$(($hours * 60 + $minutes))
+	seconds=$(($minutes * 60 + $seconds +1 ))
+	# print progress
+	while (( seconds-- > 1 )) {
+		print -Pn "\r\e[0K$seconds seconds remaining"
+		sleep 1
+	}
+	print -Pn "\r\e[0K$seconds seconds remaining";
+	# see initialization
+	print "\nTimer${timer} finished on $(date +%d.%m.%Y) at $(date +%H:%M:%S)."
+	# notify
+	notify-send --icon=clock "Timer finished" "$2"
+else
+	echo "Invalid timestamp, exiting."
+	exit 1
+fi
+exit 0
