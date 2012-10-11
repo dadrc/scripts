@@ -8,12 +8,13 @@ function setTime() {
 
 # print seconds in human-readable way
 function prettyPrint() {
+	# for readability
 	local seconds=$1
-	local minutes=0
-	local hours=0
-	minutes=$(($minutes + $(($seconds / 60))))
+	# normalize seconds
+	local minutes=$(($seconds / 60))
 	seconds=$(($seconds % 60))
-	hours=$(($hours + $(($minutes / 60))))
+	# normalize minutes
+	local hours=$(($minutes / 60))
 	minutes=$(($minutes % 60))
 	if [[ $seconds -lt  10 ]] seconds=${(l:2::0:)${seconds}}
 	if [[ $minutes -lt  10 ]] minutes=${(l:2::0:)${minutes}}
