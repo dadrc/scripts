@@ -26,8 +26,19 @@ if (($+2)) timer=" ${(qq)2}"
 
 # at least one match was successful
 if $valid; then
+	# make sure minutes and secs aren't bigger than 60
+	while (( seconds > 60 )) {
+		minutes=$(( $minutes + 1 ))
+		seconds=$(( $seconds - 60 ))
+	}
+	while (( minutes > 60 )) {
+		hours=$(( $minutes + 1 ))
+		minutes=$(( $minutes - 60 ))
+	}
 	# pad numbers to at least 2 digits and echo them
-	echo "Starting timer: ${hours}:${(l:2::0:)${minutes}}:${(l:2::0:)${seconds}}."
+	if [[ $seconds -lt  10 ]]; then; printsecs=${(l:2::0:)${seconds}}; else printsecs=$seconds; fi
+	if [[ $minutes -lt  10 ]]; then; printmins=${(l:2::0:)${minutes}}; else printmins=$minutes; fi
+	echo "Starting timer: ${hours}:${printmins}:${printsecs}."
 	# calculate seconds
 	minutes=$(($hours * 60 + $minutes))
 	seconds=$(($minutes * 60 + $seconds +1 ))
