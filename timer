@@ -53,7 +53,6 @@ if $valid; then
 		print -Pn "\r\e[0K$(prettyPrint $seconds) remaining"
 		sleep 1
 	}
-	print -Pn "\r\e[0K$(prettyPrint $seconds) remaining"
 	# see initialization
 	print -P "\r\e[0KTimer${timer} finished on $(date +%d.%m.%Y) at $(date +%H:%M:%S)."
 	# notify
