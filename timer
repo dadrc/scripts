@@ -15,8 +15,8 @@ function prettyPrint() {
 	seconds=$(($seconds % 60))
 	hours=$(($hours + $(($minutes / 60))))
 	minutes=$(($minutes % 60))
-	if [[ $seconds -lt  10 ]]; then; seconds=${(l:2::0:)${seconds}}; fi
-	if [[ $minutes -lt  10 ]]; then; minutes=${(l:2::0:)${minutes}}; fi
+	if [[ $seconds -lt  10 ]] seconds=${(l:2::0:)${seconds}}
+	if [[ $minutes -lt  10 ]] minutes=${(l:2::0:)${minutes}}
 	echo $hours:$minutes:$seconds
 }
 
@@ -31,7 +31,7 @@ hours=0
 minutes=0
 seconds=0
 valid=false
-if (($+2)) timer=" ${(qq)2}"
+if [[ -n $2 ]] timer=" ${(qq)2}"
 
 # parse timestamp
 [[ "$1" =~ "([0-9]+)h" ]] && setTime "hours"
