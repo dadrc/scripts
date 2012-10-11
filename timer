@@ -6,6 +6,20 @@ function setTime() {
 	valid=true
 }
 
+# print seconds in human-readable way
+function prettyPrint() {
+	local seconds=$1
+	local minutes=0
+	local hours=0
+	minutes=$(($minutes + $(($seconds / 60))))
+	seconds=$(($seconds % 60))
+	hours=$(($hours + $(($minutes / 60))))
+	minutes=$(($minutes % 60))
+	if [[ $seconds -lt  10 ]]; then; seconds=${(l:2::0:)${seconds}}; fi
+	if [[ $minutes -lt  10 ]]; then; minutes=${(l:2::0:)${minutes}}; fi
+	echo $hours:$minutes:$seconds
+}
+
 # catch missing parameter
 if [ -z "$1" ]; then
 	echo "Usage: ${0##*/} <hours>h<minutes>m<seconds>s [<description>]"
@@ -26,28 +40,18 @@ if (($+2)) timer=" ${(qq)2}"
 
 # at least one match was successful
 if $valid; then
-	# make sure minutes and secs aren't bigger than 60
-	while (( seconds > 60 )) {
-		minutes=$(( $minutes + 1 ))
-		seconds=$(( $seconds - 60 ))
-	}
-	while (( minutes > 60 )) {
-		hours=$(( $hours + 1 ))
-		minutes=$(( $minutes - 60 ))
-	}
-	# pad numbers to at least 2 digits and echo them
-	if [[ $seconds -lt  10 ]]; then; printsecs=${(l:2::0:)${seconds}}; else printsecs=$seconds; fi
-	if [[ $minutes -lt  10 ]]; then; printmins=${(l:2::0:)${minutes}}; else printmins=$minutes; fi
-	echo "Starting timer: ${hours}:${printmins}:${printsecs}."
 	# calculate seconds
 	minutes=$(($hours * 60 + $minutes))
-	seconds=$(($minutes * 60 + $seconds +1 ))
+	seconds=$(($minutes * 60 + $seconds))
+	echo "Starting timer: $(prettyPrint $seconds)."
+	# offset 
+	seconds=$(($seconds + 1))
 	# print progress
 	while (( seconds-- > 1 )) {
-		print -Pn "\r\e[0K$seconds seconds remaining"
+		print -Pn "\r\e[0K$(prettyPrint $seconds) remaining"
 		sleep 1
 	}
-	print -Pn "\r\e[0K$seconds seconds remaining";
+	print -Pn "\r\e[0K$(prettyPrint $seconds) remaining"
 	# see initialization
 	print "\nTimer${timer} finished on $(date +%d.%m.%Y) at $(date +%H:%M:%S)."
 	# notify
