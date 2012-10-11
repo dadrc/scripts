@@ -16,6 +16,7 @@ function prettyPrint() {
 	# normalize minutes
 	local hours=$(($minutes / 60))
 	minutes=$(($minutes % 60))
+	# pad with zeroes
 	if [[ $seconds -lt  10 ]] seconds=${(l:2::0:)${seconds}}
 	if [[ $minutes -lt  10 ]] minutes=${(l:2::0:)${minutes}}
 	echo $hours:$minutes:$seconds
