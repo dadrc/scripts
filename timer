@@ -1,11 +1,5 @@
 #!/usr/bin/zsh
 
-# dirty little helper
-function setTime() {
-	eval $1=$match[1]
-	valid=true
-}
-
 # print seconds in human-readable way
 function prettyPrint() {
 	# for readability
@@ -17,9 +11,7 @@ function prettyPrint() {
 	local hours=$(($minutes / 60))
 	minutes=$(($minutes % 60))
 	# pad with zeroes
-	if [[ $seconds -lt  10 ]] seconds=${(l:2::0:)${seconds}}
-	if [[ $minutes -lt  10 ]] minutes=${(l:2::0:)${minutes}}
-	echo $hours:$minutes:$seconds
+	echo $hours:${(l:2::0:)${minutes}}:${(l:2::0:)${seconds}}
 }
 
 # catch missing parameter
@@ -36,15 +28,12 @@ valid=false
 if [[ -n $2 ]] timer=" ${(qq)2}"
 
 # parse timestamp
-[[ "$1" =~ "([0-9]+)h" ]] && setTime "hours"
-[[ "$1" =~ "([0-9]+)m" ]] && setTime "minutes"
-[[ "$1" =~ "([0-9]+)s" ]] && setTime "seconds"
+[[ "$1" =~ "([0-9]+)h" ]] && seconds=$(($match[1] * 3600)) && valid=true
+[[ "$1" =~ "([0-9]+)m" ]] && seconds=$(($seconds + $match[1] * 60)) && valid=true
+[[ "$1" =~ "([0-9]+)s" ]] && seconds=$(($seconds + $match[1])) && valid=true
 
 # at least one match was successful
 if $valid; then
-	# calculate seconds
-	minutes=$(($hours * 60 + $minutes))
-	seconds=$(($minutes * 60 + $seconds))
 	echo "Starting timer: $(prettyPrint $seconds)."
 	# offset 
 	seconds=$(($seconds + 1))
