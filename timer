@@ -21,8 +21,6 @@ if [[ -z $1 ]]; then
 fi
 
 # initialize stuff
-hours=0
-minutes=0
 seconds=0
 valid=false
 if [[ -n $2 ]] timer=" ${(qq)2}"
