@@ -41,7 +41,7 @@ if $valid; then
 		sleep 1
 	}
 	# see initialization
-	print -P "\r\e[0KTimer${timer} finished on $(date +%d.%m.%Y) at $(date +%H:%M:%S)."
+	print -P "\r\e[0KTimer${timer} finished on $(date +'%d.%m.%Y at %H:%M:%S')."
 	# notify
 	notify-send --icon=clock "Timer finished" "$2"
 else
