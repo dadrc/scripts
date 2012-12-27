@@ -1,0 +1,2 @@
+#!/bin/zsh
+while true; do print -Pn "\r\e[0K$(date +'%H:%M:%S')"; sleep 1; done
