@@ -122,7 +122,7 @@ args = parser.parse_args()
 if args.add:
 	for url in args.add:
 		item_id = add_to_pocket(consumer_key, token, url)
-		print("Added URL '%s' as item %d." % url, item_id)
+		print("Added URL '%s' as item %d." %(url, item_id))
 # no arguments given: list unread
 else:
 	list_unread(consumer_key, token)
