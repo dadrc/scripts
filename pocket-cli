@@ -18,22 +18,27 @@ get_url = api_base + 'get'
 rc_file = expanduser('~/.pocketrc')
 config = configparser.ConfigParser(allow_no_value=True)
 
+def pocket_request(values, url):
+	data = urlencode(values)
+	data = data.encode('UTF-8')
+	req = urllib.request.Request(url, data)
+	response = urlopen(req)
+	
+	if (response.status != 200):
+		raise Exception("Expected code 200, got %d" % response.status)
+	
+	return dict(parse_qsl(response.read().decode('UTF-8')))
+
 #oauth
 def oauth_code(key):
 	values = {
 			'consumer_key':key,
 			'redirect_uri':'https://getpocket.com/connected_accounts'
 	}
-	data = urlencode(values)
-	data = data.encode('UTF-8')
-	req = urllib.request.Request(request_url, data)
-	response = urlopen(req)
 	
-	if (response.status != 200):
-		raise Exception("Expected code 200, got %d" % response.status)
-	
-	resp_objects = dict(parse_qsl(response.read().decode('UTF-8')))
+	resp_objects = pocket_request(values, request_url)
 	code = resp_objects['code']
+	
 	print("Please open https://getpocket.com/auth/authorize?request_token=%s&redirect_uri=https://getpocket.com/connected_accounts in your browser, authorize pocket-cli and run pocket-cli again." %  code)
 	return code
 
@@ -42,15 +47,8 @@ def oauth_token(key, reqcode):
 			'consumer_key':key,
 			'code':reqcode
 	}
-	data = urlencode(values)
-	data = data.encode('UTF-8')
-	req = urllib.request.Request(authorize_url, data)
-	response = urlopen(req)
 	
-	if (response.status != 200):
-		raise Exception("Expected code 200, got %d" % response.status)
-	
-	resp_objects = dict(parse_qsl(response.read().decode('UTF-8')))
+	resp_objects = pocket_request(values, authorize_url)
 	print(resp_objects)
 	token = resp_objects['access_token']
 	return token
@@ -61,15 +59,8 @@ def list_unread(key, token):
 			'access_token':token,
 			'state':'unread'
 	}
-	data = urlencode(values)
-	data = data.encode('UTF-8')
-	req = urllib.request.Request(get_url, data)
-	response = urlopen(req)
 	
-	if (response.status != 200):
-		raise Exception("Expected code 200, got %d" % response.status)
-	
-	resp_objects = dict(parse_qsl(response.read().decode('UTF-8')))
+	resp_objects = pocket_request(values, get_url)
 	print(resp_objects)
 
 # load config, perform oauth if necessary
