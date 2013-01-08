@@ -2,11 +2,13 @@
 import argparse
 from urllib.parse import urlencode
 from urllib.parse import parse_qsl
+from urllib.parse import parse_qs
 from urllib.request import urlopen
 import urllib
 import configparser
 from os.path import isfile
 from os.path import expanduser
+import json
 
 # config
 consumer_key = '11411-11f6716adafdbf8ee3401509'
@@ -18,16 +20,28 @@ get_url = api_base + 'get'
 rc_file = expanduser('~/.pocketrc')
 config = configparser.ConfigParser(allow_no_value=True)
 
-def pocket_request(values, url):
+def pocket_request(values, target_url):
 	data = urlencode(values)
 	data = data.encode('UTF-8')
-	req = urllib.request.Request(url, data)
+	req = urllib.request.Request(target_url, data)
 	response = urlopen(req)
 	
 	if (response.status != 200):
 		raise Exception("Expected code 200, got %d" % response.status)
 	
+	# replace with parse_qs?
 	return dict(parse_qsl(response.read().decode('UTF-8')))
+
+def pocket_request_json(values, target_url):
+	data = urlencode(values)
+	data = data.encode('UTF-8')
+	req = urllib.request.Request(target_url, data)
+	response = urlopen(req)
+	
+	if (response.status != 200):
+		raise Exception("Expected code 200, got %d" % response.status)
+	
+	return json.loads(response.read().decode('UTF-8'))
 
 #oauth
 def oauth_code(key):
@@ -60,8 +74,15 @@ def list_unread(key, token):
 			'state':'unread'
 	}
 	
-	resp_objects = pocket_request(values, get_url)
-	print(resp_objects)
+	resp_objects = pocket_request_json(values, get_url)
+	print(resp_objects['list'])
+
+def add_to_pocket(key, token, url):
+	values = {'consumer_key':key, 'access_token':token, 'url':url}
+	response = pocket_request_json(values, add_url)
+	print(response)
+	item = response['item']
+	return item['item_id']
 
 # load config, perform oauth if necessary
 if (not isfile(rc_file)):
@@ -99,7 +120,9 @@ args = parser.parse_args()
 
 #
 if args.add:
-	print("Not implemented.")
+	for url in args.add:
+		item_id = add_to_pocket(consumer_key, token, url)
+		print("Added URL '%s' as item %d." % url, item_id)
 # no arguments given: list unread
 else:
 	list_unread(consumer_key, token)
