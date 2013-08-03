@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#TODO dürfen die Wahrscheinlichkeiten hier bedingt sein?
+#TODO duerfen die Wahrscheinlichkeiten hier bedingt sein?
 def match(current, crowd):
 	return current * crowd + (1 - current) * ((1 - crowd) / 4)
 
