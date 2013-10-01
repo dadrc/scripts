@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+if [ -z "$1" ]; then
+	echo "No box given, usage:\n\t\$ $(basename $0) <box> <text>"
+elif [ -z "$2" ]; then
+	echo "No text given, usage:\n\t\$ $(basename $0) <box> <text>"
+else
+	# for readability
+	target="$1"
+	string="$2"
+	typeset -A search
+	search=("&" "&amp;" "'" "\'")
+	for key in ${(@k)search}; do
+		string=${string//$key/$search[$key]}
+	done
+	echo "${target}.text = '$string'" | awesome-client
+fi

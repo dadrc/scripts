@@ -15,12 +15,13 @@ class Check(Thread):
 		self.daemon = True
 	
 	def send(self, target, string):
-		system("echo \"%s.text = '%s '\" | /usr/bin/awesome-client" % (target, string))
+		system("echo \"%s.text = '<span color=\\\"#ffffff\\\">%s </span>'\" | /usr/bin/awesome-client" % (target, string))
 
 	def run(self):
 		while True:
 			process = Popen([self.command, self.args], stdout=PIPE)
 			out, err = process.communicate()
+			print out.strip()
 			self.send(self.target, out.strip())
 			sleep(self.interval)
 
@@ -29,9 +30,10 @@ def interrupt(signal, frame):
 
 if __name__ == '__main__':
 	checks = list()
+	checks.append(Check('tempbox', 'monitor-temp', '', 60))
 	checks.append(Check('updatebox', 'monitor-updates', '', 30))
 	for c in checks:
-		c.run()
+		c.start()
 	# wait for interrupt
 	signal.signal(signal.SIGINT, interrupt)
 	signal.pause()
