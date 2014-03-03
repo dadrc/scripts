@@ -1,0 +1,12 @@
+#!/usr/bin/zsh
+set -o shwordsplit
+procs=$(ls /proc | grep -oP "[0-9]*")
+for pid in $procs; do
+	if [[ -d "/proc/$pid/" ]]; then
+		cmdline=$(cat /proc/$pid/cmdline)
+		if [[ -n "$cmdline" ]]; then
+			cmdline=$(echo $cmdline | cut -d' ' -f1) 
+			echo ${cmdline##*/}| tr -d ' :'
+		fi
+	fi
+done
