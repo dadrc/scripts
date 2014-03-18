@@ -19,7 +19,7 @@ def get_mails(files):
 
 def print_entry(part, mail, header):
     if header:
-        msg = '-----\nCalendar entry from file {}\nID: {}\n-----'
+        msg = '-----\nPart from file {}\nID: {}\n-----'
         print msg.format(mail.path, mail.content.get('Subject'))
     if (part.get('Content-Transfer-Encoding') == 'base64'):
         print b64decode(part.get_payload())
@@ -49,7 +49,7 @@ def main():
                         help='print only base64-encoded parts')
     parser.add_argument('-B', '--nobase64', action='store_true',
                         help='skip base64-encoded parts')
-    parser.add_argument('--header',
+    parser.add_argument('--header', action='store_true',
                         help='print information about the mail')
     parser.add_argument('files', nargs=argparse.REMAINDER)
     args = parser.parse_args()
