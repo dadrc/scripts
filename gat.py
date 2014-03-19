@@ -29,8 +29,9 @@ def print_entry(part, mail, header):
 
 def get_entry(mail, subtype, filename, header, base64, nobase64):
     for part in mail.content.walk():
+        partname = part.get_filename().lower() if part.get_filename() else ''
         if ((not subtype or subtype in part.get_content_subtype()) and
-                (not filename or part.get_filename() == filename)):
+                (not filename or partname == filename.lower())):
             isbase64 = (part.get('Content-Transfer-Encoding') == 'base64')
             if ((isbase64 and base64) or
                     (not isbase64 and nobase64) or
