@@ -1,4 +1,5 @@
 #!/usr/bin/zsh
+SOUNDFILE="/usr/share/sounds/purple/receive.wav"
 
 # print seconds in human-readable way
 function prettyPrint() {
@@ -14,10 +15,35 @@ function prettyPrint() {
 	echo $hours:${(l:2::0:)${minutes}}:${(l:2::0:)${seconds}}
 }
 
+function beep() {
+    aplay $SOUNDFILE 2&>1 > /dev/null
+}
+
+function usage() {
+	echo "Usage: ${0##*/} [-s] <hours>h<minutes>m<seconds>s [<description>]"
+}
+
+SOUND=false
+while getopts ":s" opt; do
+    case $opt in
+        s)
+            SOUND=true
+            ;;
+        \?)
+            echo "Invalid option -$OPTARG" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+# fix parameter
+shift $((OPTIND-1))
+
 # catch missing parameter
 if [[ -z $1 ]]; then
-	echo "Usage: ${0##*/} <hours>h<minutes>m<seconds>s [<description>]"
-	exit 1
+	usage
+    exit 1
 fi
 
 # initialize stuff
@@ -43,6 +69,7 @@ if $valid; then
 	# see initialization
 	print -P "\r\e[0KTimer${timer} finished on $(date +'%d.%m.%Y at %H:%M:%S')."
 	# notify
+    $SOUND && beep &
 	notify-send --icon=clock "Timer finished" "$2"
 else
 	echo "Invalid timestamp, exiting."
