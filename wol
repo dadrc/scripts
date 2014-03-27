@@ -1,0 +1,12 @@
+#!/bin/sh
+## a wakeonlan wrapper supporting host names 	##
+##----------------------------------------------##
+## files in ~/.wol are supposed to be in the 	##
+## format described in `man wakeonlan` and 		##
+## named like the host whose MAC they contain.	##
+[ -f "$HOME/.wol/${1}.wol" ] && file="$HOME/.wol/${1}.wol"
+if [ -n "$file" ]; then
+	wakeonlan -f "$file"
+else
+	wakeonlan "$@"
+fi
