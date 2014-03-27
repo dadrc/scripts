@@ -28,6 +28,7 @@ def print_entry(part, mail, header):
 
 
 def get_entry(mail, subtype, filename, header, base64, nobase64):
+    printed = 0
     for part in mail.content.walk():
         partname = part.get_filename().lower() if part.get_filename() else ''
         if ((not subtype or subtype in part.get_content_subtype()) and
@@ -36,7 +37,9 @@ def get_entry(mail, subtype, filename, header, base64, nobase64):
             if ((isbase64 and base64) or
                     (not isbase64 and nobase64) or
                     (not base64 and not nobase64)):
+                printed += 1
                 print_entry(part, mail, header)
+    return printed
 
 
 def main():
@@ -57,11 +60,13 @@ def main():
     # no filename given
     if not len(sys.argv) > 1:
         parser.print_help()
-        exit(1)
+        exit(2)
+    printed = 0
     mails = get_mails(args.files)
     for mail in mails:
-        get_entry(mail, args.subtype, args.filename,
-                  args.header, args.base64, args.nobase64)
+        printed += get_entry(mail, args.subtype, args.filename,
+                             args.header, args.base64, args.nobase64)
+    exit(0 if printed > 0 else 1)
 
 
 if __name__ == "__main__":
