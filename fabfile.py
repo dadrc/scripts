@@ -54,17 +54,15 @@ def list_upgrades():
 def _list_upgrades():
     result = run('apt-get --simulate --verbose-versions dist-upgrade \
                  | grep "  "')
+    host = red(env.host_string, bold=True)
+    print('[{}]'.format(host))
     if result:
         # clean up return values, prettier arrows!
         result = [x.lstrip().replace('=>', '→') for x in result.split("\n")]
-        host = red(env.host_string, bold=True)
-        print('[{}]'.format(host))
         for package in result:
             package = white(package, bold=True)
             print('Update for {}'.format(package))
     else:
-        host = red(env.host_string, bold=True)
-        print('[{}]'.format(host))
         print('No updates.')
 
 
