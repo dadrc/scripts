@@ -18,12 +18,14 @@ env.use_ssh_config = True
 
 # tasks here
 @task
-def print_hosts():
+def get_hosts():
+    """Get list of servers with upgrades available"""
     print(', '.join(_get_hosts()))
 
 
 @task
 def do_upgrades():
+    """Run `apt-get dist-upgrade -y` on all servers"""
     if env.hosts:
         execute(_do_upgrades, hosts=env.host_string)
     else:
@@ -36,6 +38,7 @@ def do_upgrades():
 
 @task
 def list_upgrades():
+    """Get all servers and the available upgrades"""
     if env.hosts:
         execute(_list_upgrades, hosts=env.host_string)
     else:
@@ -49,7 +52,6 @@ def list_upgrades():
 # helper functions
 @with_settings(warn_only=True)
 def _list_upgrades():
-    """Get list of upgradable packages from server"""
     result = run('apt-get --simulate --verbose-versions dist-upgrade \
                  | grep "  "')
     if result:
@@ -73,7 +75,6 @@ def _do_upgrades():
 
 
 def _get_hosts():
-    """Get all servers with updates available from icinga's DB"""
     config = ConfigParser.ConfigParser()
     config.read(expanduser('~/.remoteaptrc'))
     db = MySQLdb.connect(host=config.get('icinga', 'host'),
