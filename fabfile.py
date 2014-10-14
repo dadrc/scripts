@@ -66,10 +66,10 @@ def _list_upgrades():
         print('No updates.')
 
 
+@with_settings(show('stdout'))
 def _do_upgrades():
-    with show('stdout'):
-        run('apt-get --quiet --assume-yes dist-upgrade \
-            | grep --invert-match "(Reading database"')
+    run('apt-get --quiet --assume-yes dist-upgrade \
+         | grep --invert-match "(Reading database"')
 
 
 def _get_hosts():
