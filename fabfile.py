@@ -14,6 +14,7 @@ output.status = False
 output.warnings = False
 # import ssh aliases
 env.use_ssh_config = True
+env.skip_bad_hosts = True
 
 
 # tasks here
@@ -23,7 +24,7 @@ def get_hosts():
     print(', '.join(_get_hosts()))
 
 
-@task
+@task(alias='du')
 def do_upgrades():
     """Run `apt-get dist-upgrade -y` on all servers"""
     if env.hosts:
@@ -36,7 +37,7 @@ def do_upgrades():
             print('No hosts with upgrades.')
 
 
-@task
+@task(alias='lu')
 def list_upgrades():
     """Get all servers and the available upgrades"""
     if env.hosts:
@@ -66,7 +67,7 @@ def _list_upgrades():
         print('No updates.')
 
 
-@with_settings(show('stdout'))
+@with_settings(show('stdout'), warn_only=True)
 def _do_upgrades():
     run('apt-get --quiet --assume-yes dist-upgrade \
          | grep --invert-match "(Reading database"')
