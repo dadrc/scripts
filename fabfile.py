@@ -2,9 +2,10 @@
 # coding: utf-8
 import MySQLdb
 import ConfigParser
-from fabric.api import run, env, execute, task, show, with_settings
+from fabric.api import run, env, execute, task, with_settings
 from fabric.state import output
 from fabric.colors import red, white
+from fabric.context_managers import show, warn_only
 from os.path import expanduser
 
 # suppress output
