@@ -2,7 +2,7 @@
 # coding: utf-8
 import MySQLdb
 import ConfigParser
-from fabric.api import run, env, execute, task, with_settings
+from fabric.api import run, env, execute, task
 from fabric.state import output
 from fabric.colors import red, white
 from fabric.context_managers import show, warn_only
@@ -52,26 +52,26 @@ def list_upgrades():
 
 
 # helper functions
-@with_settings(warn_only=True)
 def _list_upgrades():
-    result = run('apt-get --simulate --verbose-versions dist-upgrade \
-                 | grep "  "')
-    host = red(env.host_string, bold=True)
-    print('[{}]'.format(host))
-    if result:
-        # clean up return values, prettier arrows!
-        result = [x.lstrip().replace('=>', '→') for x in result.split("\n")]
-        for package in result:
-            package = white(package, bold=True)
-            print('Update for {}'.format(package))
-    else:
-        print('No updates.')
+    with warn_only():
+        res = run('apt-get --simulate --verbose-versions dist-upgrade \
+                     | grep "  "')
+        host = red(env.host_string, bold=True)
+        print('[{}]'.format(host))
+        if res:
+            # clean up return values, prettier arrows!
+            res = [x.lstrip().replace('=>', '→') for x in res.split("\n")]
+            for package in res:
+                package = white(package, bold=True)
+                print('Update for {}'.format(package))
+        else:
+            print('No updates.')
 
 
-@with_settings(show('stdout'), warn_only=True)
 def _do_upgrades():
-    run('apt-get --quiet --assume-yes dist-upgrade \
-         | grep --invert-match "(Reading database"')
+    with show('stdout'), warn_only():
+        run('apt-get --quiet --assume-yes dist-upgrade \
+             | grep --invert-match "(Reading database"')
 
 
 def _get_hosts():
